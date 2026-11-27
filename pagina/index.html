@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <title>Encurtador</title>
+  </head>
+  <body>
+    <h1>Encurtador de links</h1>
+    <form id="form">
+      <input id="url" type="url" placeholder="https://..." required />
+      <button>Encurtar</button>
+    </form>
+    <ul id="lista"></ul>
+    <script>
+      const api = "http://localhost:3000";
+      const lista = document.querySelector("#lista");
+
+      function mostrar(link) {
+        const item = document.createElement("li");
+        item.textContent = `${api}/${link.codigo} → ${link.url} (${link.cliques} cliques) `;
+        const apagar = document.createElement("button");
+        apagar.textContent = "Apagar";
+        apagar.addEventListener("click", async () => {
+          await fetch(`${api}/links/${link.codigo}`, { method: "DELETE" });
+          item.remove();
+        });
+        item.append(apagar);
+        lista.append(item);
+      }
+
+      async function carregar() {
+        const resposta = await fetch(`${api}/links`);
+        const links = await resposta.json();
+        links.forEach(mostrar);
+      }
+
+      document.querySelector("#form").addEventListener("submit", async (evento) => {
+        evento.preventDefault();
+        const resposta = await fetch(`${api}/links`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url: document.querySelector("#url").value }),
+        });
+        mostrar(await resposta.json());
+        evento.target.reset();
+      });
+
+      carregar();
+    </script>
+  </body>
+</html>
