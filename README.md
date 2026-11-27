@@ -40,3 +40,5 @@ npx -y serve -l 5500 pagina
 ```powershell
 node --env-file=.env --test
 ```
+
+Projeto final do curso de JavaScript do FluxCode.
